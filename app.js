@@ -26,7 +26,9 @@ if (typeof module !== 'undefined') {
         clearAll,
         setDimensions,
         setAlternatives,
-        setScores
+        setScores,
+        isValidScore,
+        validateAllScores
     };
 }
 
@@ -72,6 +74,13 @@ function addDimension(name, weight) {
     if (!dimensionName) {
         if (typeof alert !== 'undefined') {
             alert('请输入维度名称');
+        }
+        return null;
+    }
+    
+    if (isNaN(dimensionWeight) || !isFinite(dimensionWeight)) {
+        if (typeof alert !== 'undefined') {
+            alert(`权重必须是有效的数字`);
         }
         return null;
     }
@@ -198,9 +207,49 @@ function deleteAlternative(id) {
     return true;
 }
 
+function isValidScore(score) {
+    const scoreValue = parseFloat(score);
+    return !isNaN(scoreValue) && 
+           isFinite(scoreValue) && 
+           scoreValue >= 0 && 
+           scoreValue <= 10;
+}
+
+function validateAllScores() {
+    const errors = [];
+    
+    alternatives.forEach(alt => {
+        const altName = alt.name;
+        dimensions.forEach(dim => {
+            const dimName = dim.name;
+            const score = scores[alt.id] && scores[alt.id][dim.id] !== undefined 
+                ? scores[alt.id][dim.id] 
+                : undefined;
+            
+            if (score === undefined) {
+                errors.push(`方案 "${altName}" 在维度 "${dimName}" 上缺少评分`);
+            } else if (!isValidScore(score)) {
+                errors.push(`方案 "${altName}" 在维度 "${dimName}" 上的评分 "${score}" 无效（必须是 0-10 之间的有效数字）`);
+            }
+        });
+    });
+    
+    return {
+        isValid: errors.length === 0,
+        errors: errors
+    };
+}
+
 // 设置评分
 function setScore(alternativeId, dimensionId, score) {
-    const scoreValue = parseFloat(score) || 0;
+    const scoreValue = parseFloat(score);
+    
+    if (!isValidScore(scoreValue)) {
+        if (typeof alert !== 'undefined') {
+            alert(`评分必须是 0 到 10 之间的有效数字，当前输入: ${score}`);
+        }
+        return null;
+    }
     
     if (!scores[alternativeId]) {
         scores[alternativeId] = {};
@@ -271,6 +320,14 @@ function calculateRankings() {
     if (alternatives.length === 0) {
         if (typeof alert !== 'undefined') {
             alert('请至少添加一个备选方案');
+        }
+        return [];
+    }
+    
+    const validation = validateAllScores();
+    if (!validation.isValid) {
+        if (typeof alert !== 'undefined') {
+            alert('评分数据无效，请检查以下问题：\n' + validation.errors.join('\n'));
         }
         return [];
     }

@@ -262,6 +262,222 @@ try {
     testFailed++;
 }
 
+// 测试12: 测试 isValidScore 函数 - 有效分数
+console.log('\n测试12: isValidScore - 有效分数');
+try {
+    assert.strictEqual(app.isValidScore(0), true, '0 应该是有效分数');
+    assert.strictEqual(app.isValidScore(5), true, '5 应该是有效分数');
+    assert.strictEqual(app.isValidScore(10), true, '10 应该是有效分数');
+    assert.strictEqual(app.isValidScore(3.5), true, '3.5 应该是有效分数');
+    assert.strictEqual(app.isValidScore('7'), true, '字符串 "7" 应该是有效分数');
+    assert.strictEqual(app.isValidScore('8.5'), true, '字符串 "8.5" 应该是有效分数');
+    
+    console.log('✓ 通过: 有效分数检测成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试13: 测试 isValidScore 函数 - 无效分数
+console.log('\n测试13: isValidScore - 无效分数');
+try {
+    assert.strictEqual(app.isValidScore(-1), false, '-1 应该是无效分数');
+    assert.strictEqual(app.isValidScore(11), false, '11 应该是无效分数');
+    assert.strictEqual(app.isValidScore(NaN), false, 'NaN 应该是无效分数');
+    assert.strictEqual(app.isValidScore(Infinity), false, 'Infinity 应该是无效分数');
+    assert.strictEqual(app.isValidScore(-Infinity), false, '-Infinity 应该是无效分数');
+    assert.strictEqual(app.isValidScore('abc'), false, '"abc" 应该是无效分数');
+    assert.strictEqual(app.isValidScore(''), false, '空字符串 应该是无效分数');
+    assert.strictEqual(app.isValidScore(null), false, 'null 应该是无效分数');
+    assert.strictEqual(app.isValidScore(undefined), false, 'undefined 应该是无效分数');
+    
+    console.log('✓ 通过: 无效分数检测成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试14: 测试 setScore - 无效输入返回 null
+console.log('\n测试14: setScore - 无效输入返回 null');
+try {
+    app.clearAll();
+    const dim = app.addDimension('测试维度', 1);
+    const alt = app.addAlternative('测试方案');
+    
+    const result1 = app.setScore(alt.id, dim.id, -5);
+    assert.strictEqual(result1, null, '负数分数应该返回 null');
+    
+    const result2 = app.setScore(alt.id, dim.id, 15);
+    assert.strictEqual(result2, null, '超出范围的分数应该返回 null');
+    
+    const result3 = app.setScore(alt.id, dim.id, NaN);
+    assert.strictEqual(result3, null, 'NaN 应该返回 null');
+    
+    const result4 = app.setScore(alt.id, dim.id, 'abc');
+    assert.strictEqual(result4, null, '非数字字符串应该返回 null');
+    
+    console.log('✓ 通过: setScore 无效输入检测成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试15: 测试 addDimension - 非数字权重
+console.log('\n测试15: addDimension - 非数字权重');
+try {
+    app.clearAll();
+    
+    const result1 = app.addDimension('测试维度', NaN);
+    assert.strictEqual(result1, null, 'NaN 权重应该返回 null');
+    
+    const result2 = app.addDimension('测试维度', Infinity);
+    assert.strictEqual(result2, null, 'Infinity 权重应该返回 null');
+    
+    const result3 = app.addDimension('测试维度', 'abc');
+    assert.strictEqual(result3, null, '非数字字符串权重应该返回 null');
+    
+    const dimensions = app.getDimensions();
+    assert.strictEqual(dimensions.length, 0, '应该没有维度被添加');
+    
+    console.log('✓ 通过: addDimension 非数字权重检测成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试16: 测试 validateAllScores - 有效数据
+console.log('\n测试16: validateAllScores - 有效数据');
+try {
+    app.clearAll();
+    const dim1 = app.addDimension('维度1', 1);
+    const dim2 = app.addDimension('维度2', 2);
+    const alt1 = app.addAlternative('方案A');
+    const alt2 = app.addAlternative('方案B');
+    
+    app.setScore(alt1.id, dim1.id, 5);
+    app.setScore(alt1.id, dim2.id, 7);
+    app.setScore(alt2.id, dim1.id, 8);
+    app.setScore(alt2.id, dim2.id, 6);
+    
+    const validation = app.validateAllScores();
+    assert.strictEqual(validation.isValid, true, '有效数据应该验证通过');
+    assert.strictEqual(validation.errors.length, 0, '不应该有错误');
+    
+    console.log('✓ 通过: validateAllScores 有效数据检测成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试17: 测试 validateAllScores - 检测已存储的无效评分
+console.log('\n测试17: validateAllScores - 检测已存储的无效评分');
+try {
+    app.clearAll();
+    const dim1 = app.addDimension('维度1', 1);
+    const alt1 = app.addAlternative('方案A');
+    
+    const scores = app.getScores();
+    scores[alt1.id] = {};
+    scores[alt1.id][dim1.id] = 15; // 直接设置无效分数（绕过 setScore 验证）
+    app.setScores(scores);
+    
+    const validation = app.validateAllScores();
+    assert.strictEqual(validation.isValid, false, '无效数据应该验证失败');
+    assert.strictEqual(validation.errors.length >= 1, true, '应该有错误');
+    assert.strictEqual(validation.errors[0].includes('15'), true, '错误信息应该包含无效值 15');
+    
+    console.log('✓ 通过: validateAllScores 检测无效评分成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试18: 测试 validateAllScores - 检测 NaN 评分
+console.log('\n测试18: validateAllScores - 检测 NaN 评分');
+try {
+    app.clearAll();
+    const dim1 = app.addDimension('维度1', 1);
+    const alt1 = app.addAlternative('方案A');
+    
+    const scores = app.getScores();
+    scores[alt1.id] = {};
+    scores[alt1.id][dim1.id] = NaN; // 直接设置 NaN
+    app.setScores(scores);
+    
+    const validation = app.validateAllScores();
+    assert.strictEqual(validation.isValid, false, 'NaN 数据应该验证失败');
+    
+    console.log('✓ 通过: validateAllScores 检测 NaN 评分成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试19: 测试 calculateRankings - 有无效评分时返回空数组
+console.log('\n测试19: calculateRankings - 有无效评分时返回空数组');
+try {
+    app.clearAll();
+    const dim1 = app.addDimension('维度1', 1);
+    const alt1 = app.addAlternative('方案A');
+    
+    const scores = app.getScores();
+    scores[alt1.id] = {};
+    scores[alt1.id][dim1.id] = 15; // 无效分数
+    app.setScores(scores);
+    
+    const rankings = app.calculateRankings();
+    assert.strictEqual(rankings.length, 0, '有无效评分时应该返回空数组');
+    
+    console.log('✓ 通过: calculateRankings 阻止无效评分参与排名成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试20: 测试完整流程 - 有效数据可以正常排名
+console.log('\n测试20: 完整流程 - 有效数据可以正常排名');
+try {
+    app.clearAll();
+    const dim1 = app.addDimension('价格', 3);
+    const dim2 = app.addDimension('性能', 5);
+    const dim3 = app.addDimension('外观', 2);
+    const alt1 = app.addAlternative('方案A');
+    const alt2 = app.addAlternative('方案B');
+    const alt3 = app.addAlternative('方案C');
+    
+    app.setScore(alt1.id, dim1.id, 8);
+    app.setScore(alt1.id, dim2.id, 6);
+    app.setScore(alt1.id, dim3.id, 9);
+    
+    app.setScore(alt2.id, dim1.id, 5);
+    app.setScore(alt2.id, dim2.id, 9);
+    app.setScore(alt2.id, dim3.id, 7);
+    
+    app.setScore(alt3.id, dim1.id, 7);
+    app.setScore(alt3.id, dim2.id, 8);
+    app.setScore(alt3.id, dim3.id, 6);
+    
+    const rankings = app.calculateRankings();
+    assert.strictEqual(rankings.length, 3, '应该有3个排名');
+    assert.strictEqual(rankings[0].name, '方案B', '第1名应该是方案B');
+    assert.strictEqual(rankings[1].name, '方案C', '第2名应该是方案C');
+    assert.strictEqual(rankings[2].name, '方案A', '第3名应该是方案A');
+    
+    console.log('✓ 通过: 完整流程测试成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
 // 输出测试结果
 console.log('\n=== 测试结果 ===');
 console.log(`通过: ${testPassed}`);

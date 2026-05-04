@@ -1,0 +1,16 @@
+{
+  "name": "decision-matrix-app",
+  "version": "1.0.0",
+  "description": "决策矩阵工具",
+  "main": "app.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "decision",
+    "matrix",
+    "utility"
+  ],
+  "author": "",
+  "license": "MIT"
+}

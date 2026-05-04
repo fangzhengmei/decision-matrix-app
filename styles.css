@@ -1,0 +1,179 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+h2 {
+    color: #34495e;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 5px;
+}
+
+.section {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+input[type="text"], input[type="number"] {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    flex: 1;
+    min-width: 120px;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.list {
+    margin-top: 10px;
+}
+
+.list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.list-item .name {
+    font-weight: bold;
+}
+
+.list-item .weight {
+    color: #7f8c8d;
+    margin-left: 10px;
+}
+
+.list-item .delete-btn {
+    background-color: #e74c3c;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.list-item .delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.matrix {
+    overflow-x: auto;
+}
+
+.matrix table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.matrix th, .matrix td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.matrix th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.matrix td:first-child {
+    font-weight: bold;
+    text-align: left;
+}
+
+.matrix input[type="number"] {
+    width: 80px;
+    text-align: center;
+}
+
+.rankings {
+    margin-top: 20px;
+}
+
+.rankings table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.rankings th, .rankings td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.rankings th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.rankings tr:nth-child(1) {
+    background-color: #fff3cd;
+    font-weight: bold;
+}
+
+.rankings tr:nth-child(2) {
+    background-color: #e9ecef;
+}
+
+.rankings tr:nth-child(3) {
+    background-color: #f8d7da;
+}
+
+.empty-message {
+    color: #7f8c8d;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}

@@ -27,7 +27,9 @@ if (typeof module !== 'undefined') {
         setDimensions,
         setAlternatives,
         setScores,
+        isStrictNumber,
         isValidScore,
+        isValidWeight,
         validateAllScores
     };
 }
@@ -58,17 +60,17 @@ function clearAll() {
 
 // 添加维度
 function addDimension(name, weight) {
-    let dimensionName, dimensionWeight;
+    let dimensionName, rawWeight;
     
     if (name !== undefined) {
         dimensionName = name;
-        dimensionWeight = weight !== undefined ? parseFloat(weight) : 1;
+        rawWeight = weight;
     } else {
         if (typeof document === 'undefined') {
             return null;
         }
         dimensionName = document.getElementById('dimensionName').value.trim();
-        dimensionWeight = parseFloat(document.getElementById('dimensionWeight').value) || 1;
+        rawWeight = document.getElementById('dimensionWeight').value;
     }
     
     if (!dimensionName) {
@@ -78,19 +80,14 @@ function addDimension(name, weight) {
         return null;
     }
     
-    if (isNaN(dimensionWeight) || !isFinite(dimensionWeight)) {
+    if (!isValidWeight(rawWeight)) {
         if (typeof alert !== 'undefined') {
-            alert(`权重必须是有效的数字`);
+            alert(`权重必须是大于 0 的有效数字，当前输入: ${rawWeight}`);
         }
         return null;
     }
     
-    if (dimensionWeight <= 0) {
-        if (typeof alert !== 'undefined') {
-            alert('权重必须大于0');
-        }
-        return null;
-    }
+    const dimensionWeight = typeof rawWeight === 'string' ? Number(rawWeight.trim()) : rawWeight;
     
     const existingIndex = dimensions.findIndex(d => d.name === dimensionName);
     if (existingIndex !== -1) {
@@ -207,12 +204,43 @@ function deleteAlternative(id) {
     return true;
 }
 
+function isStrictNumber(value) {
+    if (value === null || value === undefined) {
+        return false;
+    }
+    
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (trimmed === '') {
+            return false;
+        }
+        const num = Number(trimmed);
+        return !isNaN(num) && isFinite(num);
+    }
+    
+    if (typeof value === 'number') {
+        return !isNaN(value) && isFinite(value);
+    }
+    
+    return false;
+}
+
 function isValidScore(score) {
-    const scoreValue = parseFloat(score);
-    return !isNaN(scoreValue) && 
-           isFinite(scoreValue) && 
-           scoreValue >= 0 && 
-           scoreValue <= 10;
+    if (!isStrictNumber(score)) {
+        return false;
+    }
+    
+    const scoreValue = typeof score === 'string' ? Number(score.trim()) : score;
+    return scoreValue >= 0 && scoreValue <= 10;
+}
+
+function isValidWeight(weight) {
+    if (!isStrictNumber(weight)) {
+        return false;
+    }
+    
+    const weightValue = typeof weight === 'string' ? Number(weight.trim()) : weight;
+    return weightValue > 0;
 }
 
 function validateAllScores() {
@@ -242,14 +270,14 @@ function validateAllScores() {
 
 // 设置评分
 function setScore(alternativeId, dimensionId, score) {
-    const scoreValue = parseFloat(score);
-    
-    if (!isValidScore(scoreValue)) {
+    if (!isValidScore(score)) {
         if (typeof alert !== 'undefined') {
             alert(`评分必须是 0 到 10 之间的有效数字，当前输入: ${score}`);
         }
         return null;
     }
+    
+    const scoreValue = typeof score === 'string' ? Number(score.trim()) : score;
     
     if (!scores[alternativeId]) {
         scores[alternativeId] = {};

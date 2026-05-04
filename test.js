@@ -478,6 +478,196 @@ try {
     testFailed++;
 }
 
+// 测试21: isStrictNumber - 严格数字检测（拒绝 8abc、3abc 等）
+console.log('\n测试21: isStrictNumber - 严格数字检测');
+try {
+    assert.strictEqual(app.isStrictNumber('8abc'), false, '"8abc" 应该是无效的');
+    assert.strictEqual(app.isStrictNumber('3abc'), false, '"3abc" 应该是无效的');
+    assert.strictEqual(app.isStrictNumber('10def'), false, '"10def" 应该是无效的');
+    assert.strictEqual(app.isStrictNumber(''), false, '空字符串 应该是无效的');
+    assert.strictEqual(app.isStrictNumber('   '), false, '仅空格 应该是无效的');
+    assert.strictEqual(app.isStrictNumber('  5  '), true, '"  5  " 应该是有效的（前后空格）');
+    assert.strictEqual(app.isStrictNumber('5.5'), true, '"5.5" 应该是有效的');
+    assert.strictEqual(app.isStrictNumber(8), true, '数字 8 应该是有效的');
+    assert.strictEqual(app.isStrictNumber(null), false, 'null 应该是无效的');
+    assert.strictEqual(app.isStrictNumber(undefined), false, 'undefined 应该是无效的');
+    
+    console.log('✓ 通过: isStrictNumber 严格数字检测成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试22: isValidScore - 严格检测数字+字母字符串
+console.log('\n测试22: isValidScore - 拒绝数字+字母字符串');
+try {
+    assert.strictEqual(app.isValidScore('8abc'), false, '"8abc" 评分应该是无效的');
+    assert.strictEqual(app.isValidScore('3abc'), false, '"3abc" 评分应该是无效的');
+    assert.strictEqual(app.isValidScore('10x'), false, '"10x" 评分应该是无效的');
+    assert.strictEqual(app.isValidScore(''), false, '空字符串评分应该是无效的');
+    assert.strictEqual(app.isValidScore('   '), false, '仅空格评分应该是无效的');
+    assert.strictEqual(app.isValidScore('  7  '), true, '"  7  " 评分应该是有效的');
+    assert.strictEqual(app.isValidScore('8.5'), true, '"8.5" 评分应该是有效的');
+    assert.strictEqual(app.isValidScore('0'), true, '"0" 评分应该是有效的');
+    assert.strictEqual(app.isValidScore('10'), true, '"10" 评分应该是有效的');
+    
+    console.log('✓ 通过: isValidScore 严格检测成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试23: isValidWeight - 严格检测数字+字母字符串
+console.log('\n测试23: isValidWeight - 拒绝数字+字母字符串');
+try {
+    assert.strictEqual(app.isValidWeight('3abc'), false, '"3abc" 权重应该是无效的');
+    assert.strictEqual(app.isValidWeight('5xyz'), false, '"5xyz" 权重应该是无效的');
+    assert.strictEqual(app.isValidWeight(''), false, '空字符串权重应该是无效的');
+    assert.strictEqual(app.isValidWeight('   '), false, '仅空格权重应该是无效的');
+    assert.strictEqual(app.isValidWeight('  5  '), true, '"  5  " 权重应该是有效的');
+    assert.strictEqual(app.isValidWeight('2.5'), true, '"2.5" 权重应该是有效的');
+    assert.strictEqual(app.isValidWeight('0'), false, '"0" 权重应该是无效的（必须大于0）');
+    assert.strictEqual(app.isValidWeight('-1'), false, '"-1" 权重应该是无效的（必须大于0）');
+    
+    console.log('✓ 通过: isValidWeight 严格检测成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试24: setScore - 拒绝 8abc 等输入
+console.log('\n测试24: setScore - 拒绝无效输入');
+try {
+    app.clearAll();
+    const dim = app.addDimension('测试维度', 1);
+    const alt = app.addAlternative('测试方案');
+    
+    const result1 = app.setScore(alt.id, dim.id, '8abc');
+    assert.strictEqual(result1, null, '"8abc" 评分应该被拒绝');
+    
+    const result2 = app.setScore(alt.id, dim.id, '3abc');
+    assert.strictEqual(result2, null, '"3abc" 评分应该被拒绝');
+    
+    const result3 = app.setScore(alt.id, dim.id, '');
+    assert.strictEqual(result3, null, '空字符串评分应该被拒绝');
+    
+    const result4 = app.setScore(alt.id, dim.id, '   ');
+    assert.strictEqual(result4, null, '仅空格评分应该被拒绝');
+    
+    const result5 = app.setScore(alt.id, dim.id, '  7  ');
+    assert.strictEqual(result5, 7, '"  7  " 评分应该有效，值为7');
+    
+    console.log('✓ 通过: setScore 拒绝无效输入成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试25: addDimension - 拒绝 3abc 等权重输入
+console.log('\n测试25: addDimension - 拒绝无效权重输入');
+try {
+    app.clearAll();
+    
+    const result1 = app.addDimension('维度1', '3abc');
+    assert.strictEqual(result1, null, '"3abc" 权重应该被拒绝');
+    
+    const result2 = app.addDimension('维度2', '5xyz');
+    assert.strictEqual(result2, null, '"5xyz" 权重应该被拒绝');
+    
+    const result3 = app.addDimension('维度3', '');
+    assert.strictEqual(result3, null, '空字符串权重应该被拒绝');
+    
+    const result4 = app.addDimension('维度4', '   ');
+    assert.strictEqual(result4, null, '仅空格权重应该被拒绝');
+    
+    const result5 = app.addDimension('维度5', '  2  ');
+    assert.notStrictEqual(result5, null, '"  2  " 权重应该有效');
+    assert.strictEqual(result5.weight, 2, '权重值应该为2');
+    
+    const dimensions = app.getDimensions();
+    assert.strictEqual(dimensions.length, 1, '应该只有1个维度被添加');
+    
+    console.log('✓ 通过: addDimension 拒绝无效权重输入成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试26: validateAllScores - 检测已存储的 8abc 等无效评分
+console.log('\n测试26: validateAllScores - 检测无效评分');
+try {
+    app.clearAll();
+    const dim1 = app.addDimension('维度1', 1);
+    const alt1 = app.addAlternative('方案A');
+    
+    const scores = app.getScores();
+    scores[alt1.id] = {};
+    scores[alt1.id][dim1.id] = '8abc'; // 直接设置无效字符串
+    app.setScores(scores);
+    
+    const validation = app.validateAllScores();
+    assert.strictEqual(validation.isValid, false, '无效评分应该被检测到');
+    assert.strictEqual(validation.errors.length >= 1, true, '应该有错误信息');
+    
+    console.log('✓ 通过: validateAllScores 检测无效评分成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试27: calculateRankings - 有无效评分时阻止排名
+console.log('\n测试27: calculateRankings - 无效评分阻止排名');
+try {
+    app.clearAll();
+    const dim1 = app.addDimension('维度1', 1);
+    const alt1 = app.addAlternative('方案A');
+    
+    const scores = app.getScores();
+    scores[alt1.id] = {};
+    scores[alt1.id][dim1.id] = '3abc'; // 无效评分
+    app.setScores(scores);
+    
+    const rankings = app.calculateRankings();
+    assert.strictEqual(rankings.length, 0, '有无效评分时应该返回空数组');
+    
+    console.log('✓ 通过: calculateRankings 阻止无效评分参与排名成功');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
+// 测试28: 完整流程 - 使用带前后空格的输入也能正常工作
+console.log('\n测试28: 完整流程 - 前后空格输入正常工作');
+try {
+    app.clearAll();
+    const dim1 = app.addDimension('价格', '  3  ');
+    const dim2 = app.addDimension('性能', '  5  ');
+    const alt1 = app.addAlternative('方案A');
+    const alt2 = app.addAlternative('方案B');
+    
+    app.setScore(alt1.id, dim1.id, '  8  ');
+    app.setScore(alt1.id, dim2.id, '  6  ');
+    app.setScore(alt2.id, dim1.id, '  5  ');
+    app.setScore(alt2.id, dim2.id, '  9  ');
+    
+    const rankings = app.calculateRankings();
+    assert.strictEqual(rankings.length, 2, '应该有2个排名');
+    assert.strictEqual(rankings[0].name, '方案B', '第1名应该是方案B');
+    
+    console.log('✓ 通过: 前后空格输入正常工作');
+    testPassed++;
+} catch (error) {
+    console.log('✗ 失败:', error.message);
+    testFailed++;
+}
+
 // 输出测试结果
 console.log('\n=== 测试结果 ===');
 console.log(`通过: ${testPassed}`);
